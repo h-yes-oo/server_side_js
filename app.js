@@ -1,20 +1,36 @@
 const express = require('express');
+var bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 app.locals.pretty = true;
 app.set('view engine','pug');
 app.set('views','./views');
 app.use(express.static('public'));
+app.use(bodyParser.urlencoded({extended: false}))
 
-app.get('/topic',function(req, res){
+app.get('/form',function(req,res){
+    res.render('form');
+});
+app.get('/form_receiver',function(req,res){
+    var title = req.query.title;
+    var description = req.query.description;
+    res.send(title+','+description)
+})
+app.post('/form_receiver',function(req,res){
+    res.send(req.body.title+','+req.body.description);
+})
+app.get('/topic/:id',function(req, res){
     var topics = ['info','qna','story'];
     var output = `
-    <a href="/topic?id=0"> club info </a><br>
-    <a href="/topic?id=1"> club qna </a><br>
-    <a href="/topic?id=2"> club story </a><br>
-    ${topics[req.query.id]}
+    <a href="/topic/0"> club info </a><br>
+    <a href="/topic/1"> club qna </a><br>
+    <a href="/topic/2"> club story </a><br>
+    ${topics[req.params.id]}
     `
     res.send(output);
+})
+app.get('/topic/:id/:mode',function(req,res){
+    res.send(req.params.id+','+req.params.mode)
 })
 
 app.get('/template', function(req, res) {
